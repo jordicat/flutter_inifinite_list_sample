@@ -76,7 +76,7 @@ class ItemTile extends StatelessWidget {
           item.name,
           style: Theme.of(context).textTheme.headline6,
         ),
-        trailing: Text('${(item.price / 100).toStringAsFixed(2)}'),
+        trailing: Text('${(item.price / 100).toStringAsFixed(2)}€'),
       ),
     );
   }
