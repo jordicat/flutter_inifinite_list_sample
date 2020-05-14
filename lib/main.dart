@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'models/catalog.dart';
-import 'models/item.dart';
+import 'catalog.dart';
+import 'src/models/item.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,34 +20,33 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: MyHomePage(),
+        home: CatalogPage(),
       ),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class CatalogPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Flutter Infinite List Sample')),
-      body: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        itemBuilder: (context, index) {
-          var catalog = Provider.of<Catalog>(context);
-          var item = catalog.getByIndex(index);
+      body: Selector<Catalog, int>(
+        builder: (context, itemCount, child) => ListView.builder(
+          itemCount: itemCount,
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          itemBuilder: (context, index) {
+            var catalog = Provider.of<Catalog>(context);
+            var item = catalog.getByIndex(index);
 
-          if (item.isLoading) {
-            return LoadingItemTile();
-          }
+            if (item.isLoading) {
+              return LoadingItemTile();
+            }
 
-          return ItemTile(item: item);
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: "Refresh",
-        child: Icon(Icons.refresh),
+            return ItemTile(item: item);
+          },
+        ),
+        selector: (context, catalog) => catalog.itemCount,
       ),
     );
   }

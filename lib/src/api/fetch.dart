@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
-import 'item.dart';
+import '../models/item.dart';
+import '../models/page.dart';
 
 const int itemsPerPage = 20;
+const catalogLength = 200;
 
 Future<ItemPage> fetchPage(int startingIndex) async {
   await Future.delayed(const Duration(milliseconds: 500));
+
+  if (startingIndex > catalogLength) {
+    return ItemPage(
+      items: [],
+      startingIndex: startingIndex,
+      hasNext: false,
+    );
+  }
+
   return ItemPage(
     items: List.generate(
       itemsPerPage,
@@ -17,18 +27,6 @@ Future<ItemPage> fetchPage(int startingIndex) async {
       ),
     ),
     startingIndex: startingIndex,
-    hasNext: true,
+    hasNext: startingIndex + itemsPerPage < catalogLength,
   );
-}
-
-class ItemPage {
-  final List<Item> items;
-  final int startingIndex;
-  final bool hasNext;
-
-  ItemPage({
-    @required this.items,
-    @required this.startingIndex,
-    @required this.hasNext,
-  });
 }

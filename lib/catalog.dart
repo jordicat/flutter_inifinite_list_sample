@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'src/api/item.dart';
-import 'src/api/page.dart';
+import 'src/api/fetch.dart';
+import 'src/models/item.dart';
+import 'src/models/page.dart';
 
 class Catalog extends ChangeNotifier {
   final Map<int, ItemPage> _pages = {};
+  final Set<int> _pagesBeingFetched = {};
+
+  int itemCount;
 
   Item getByIndex(int index) {
     var startingIndex = (index ~/ itemsPerPage) * itemsPerPage;
@@ -14,7 +18,6 @@ class Catalog extends ChangeNotifier {
       var item = _pages[startingIndex].items[index - startingIndex];
       return item;
     }
-
     _fetchPage(startingIndex);
     return Item.loading();
   }
@@ -22,8 +25,18 @@ class Catalog extends ChangeNotifier {
   static const maxCacheDistance = 100;
 
   void _fetchPage(int startingIndex) async {
-    _pages[startingIndex] = await fetchPage(startingIndex);
-    print('current pages: ${_pages.keys}');
+    if (_pagesBeingFetched.contains(startingIndex)) {
+      return;
+    }
+
+    _pagesBeingFetched.add(startingIndex);
+    final page = await fetchPage(startingIndex);
+    _pagesBeingFetched.remove(startingIndex);
+
+    if (!page.hasNext) {
+      itemCount = startingIndex + page.items.length;
+    }
+    _pages[startingIndex] = page;
     _pruneCache(startingIndex);
     notifyListeners();
   }
