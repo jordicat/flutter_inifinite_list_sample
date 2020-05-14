@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import '../models/item.dart';
+import 'item.dart';
 
 const int itemsPerPage = 20;
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_infinite_list_sample/respositories/api.dart';
 
-import 'item.dart';
+import 'src/api/item.dart';
+import 'src/api/page.dart';
 
 class Catalog extends ChangeNotifier {
   final Map<int, ItemPage> _pages = {};
