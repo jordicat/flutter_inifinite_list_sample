@@ -12,7 +12,6 @@ class Catalog extends ChangeNotifier {
 
     if (_pages.containsKey(startingIndex)) {
       var item = _pages[startingIndex].items[index - startingIndex];
-      print(item.name);
       return item;
     }
 
@@ -20,10 +19,24 @@ class Catalog extends ChangeNotifier {
     return Item.loading();
   }
 
+  static const maxCacheDistance = 100;
+
   void _fetchPage(int startingIndex) async {
-    print(startingIndex);
     _pages[startingIndex] = await fetchPage(startingIndex);
-    // TODO: clean pages not needed anymore
+    print('current pages: ${_pages.keys}');
+    _pruneCache(startingIndex);
     notifyListeners();
+  }
+
+  void _pruneCache(int currentStartingIndex) {
+    final keysToRemove = <int>{};
+    for (final key in _pages.keys) {
+      if ((key - currentStartingIndex).abs() > maxCacheDistance) {
+        keysToRemove.add(key);
+      }
+    }
+    for (final key in keysToRemove) {
+      _pages.remove(key);
+    }
   }
 }
